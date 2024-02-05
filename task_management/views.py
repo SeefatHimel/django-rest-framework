@@ -22,12 +22,18 @@ def tasks(request):
     return render(request, "tasks.html", {"tasks": tasks})
 
 
-@api_view(["GET"])
+@api_view(["GET", "POST"])
 def tasks(request, format=None):
     if request.method == "GET":
         tasks = Task.objects.all()
         serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data)
+    elif request.method == "POST":
+        serializer = TaskSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["GET", "PUT", "DELETE"])
