@@ -21,5 +21,6 @@ from task_management.views import home
 urlpatterns = [
     path('admin/', admin.site.urls),
     # path('home/', home),
-    path('task_management/', include('task_management.urls'))
+    path('task_management/', include('task_management.urls')),
+    path('auth/', include('base.urls'))
 ]
