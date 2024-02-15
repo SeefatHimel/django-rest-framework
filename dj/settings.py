@@ -26,8 +26,10 @@ SECRET_KEY = "django-insecure-x4h=x(_f@7=e!=f+8df+g50nbg5&kvgqel4d79(n!(oi(l@t4+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = [
+    'djangobacken.onrender.com',
+    # Add other domain names or IP addresses as needed
+]
 
 # Application definition
 
