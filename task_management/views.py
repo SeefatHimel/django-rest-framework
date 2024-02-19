@@ -24,6 +24,8 @@ def tasks(request):
 
 @api_view(["GET", "POST"])
 def tasks(request, format=None):
+    print("🐍 ",request.query_params)
+    
     if request.method == "GET":
         tasks = Task.objects.all()
         serializer = TaskSerializer(tasks, many=True)

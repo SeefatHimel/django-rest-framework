@@ -28,6 +28,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'djangobacken.onrender.com',
+    '127.0.0.1'
     # Add other domain names or IP addresses as needed
 ]
 
@@ -51,6 +52,8 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     )
 }
+
+AUTH_USER_MODEL ='base.user'
 
 
 SIMPLE_JWT = {
@@ -133,13 +136,25 @@ WSGI_APPLICATION = "dj.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "apploye",
-        "USER": "apploye_user",
-        "PASSWORD": "DNgtRr1CNPED1VKPGWnZrkvnxkKMwf7E",
-        "HOST": "dpg-cmrikh8l5elc73aj3thg-a.singapore-postgres.render.com",
+        "NAME": "django_81v5",
+        "USER": "django_81v5_user",
+        "PASSWORD": "1wZG8ELpbDXOrnf8AbAoYy8jbHOjdASO",
+        "HOST": "dpg-cn968cf79t8c73c3bjh0-a.singapore-postgres.render.com",
         "PORT": "5432",
     }
 }
+
+
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": "apploye",
+#         "USER": "apploye_user",
+#         "PASSWORD": "DNgtRr1CNPED1VKPGWnZrkvnxkKMwf7E",
+#         "HOST": "dpg-cmrikh8l5elc73aj3thg-a.singapore-postgres.render.com",
+#         "PORT": "5432",
+#     }
+# }
 
 
 # Password validation
