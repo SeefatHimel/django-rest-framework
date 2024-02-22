@@ -27,8 +27,8 @@ SECRET_KEY = "django-insecure-x4h=x(_f@7=e!=f+8df+g50nbg5&kvgqel4d79(n!(oi(l@t4+
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'djangobacken.onrender.com',
-    '127.0.0.1'
+    "djangobacken.onrender.com",
+    "127.0.0.1",
     # Add other domain names or IP addresses as needed
 ]
 
@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "task_management",
     "rest_framework",
     "base",
+    "datatypes",
 ]
 
 REST_FRAMEWORK = {
@@ -53,7 +54,7 @@ REST_FRAMEWORK = {
     )
 }
 
-AUTH_USER_MODEL ='base.user'
+AUTH_USER_MODEL = "base.user"
 
 
 SIMPLE_JWT = {
@@ -131,18 +132,27 @@ WSGI_APPLICATION = "dj.wsgi.application"
 
 
 # Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+# https://docs.djangoproject.com/en/5.0/ref/settings/#
+
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "django_81v5",
-        "USER": "django_81v5_user",
-        "PASSWORD": "1wZG8ELpbDXOrnf8AbAoYy8jbHOjdASO",
-        "HOST": "dpg-cn968cf79t8c73c3bjh0-a.singapore-postgres.render.com",
-        "PORT": "5432",
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
+
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": "django_81v5",
+#         "USER": "django_81v5_user",
+#         "PASSWORD": "1wZG8ELpbDXOrnf8AbAoYy8jbHOjdASO",
+#         "HOST": "dpg-cn968cf79t8c73c3bjh0-a.singapore-postgres.render.com",
+#         "PORT": "5432",
+#     }
+# }
 
 
 # DATABASES = {
