@@ -11,16 +11,18 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 from rest_framework import status
 from django.contrib.auth import authenticate
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-        print("<><><><><>>>",user, token)
+        print("<><><><><>>>", user, token)
         # Add custom claims
         token["name"] = user.username
-        
+
         return token
 
 
@@ -30,16 +32,16 @@ class MyTokenObtainPairView(TokenObtainPairView):
 
 class ListUsers(APIView):
     def get(self, request, format=None):
-        
+
         users = User.objects.all()
         print(">>>", users, users[0])
         serializer = UserSerializer(users, many=True)
-        
+
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class RegisterAPI(APIView):
-    def post(self, request,*args,**kwargs):
+    def post(self, request, *args, **kwargs):
         print(">>>", request.data)
         # return Response(request.data, status=status.HTTP_201_CREATED)
 
@@ -52,50 +54,87 @@ class RegisterAPI(APIView):
 
 class LoginAPI(APIView):
     def post(self, request, *args, **kwargs):
-        username = request.data.get('username')
-        password = request.data.get('password')
+        username = request.data.get("username")
+        password = request.data.get("password")
 
-        user = None
+        authenticatedUser = None
 
-        # Check if username is an email
-        if '@' in username:
+        email = True
+
+        # Check if username is an email 
+        try:
+            valid = validate_email(username)
+        except ValidationError:
+            email = False
+
+        # Check if the user exists
+        if email:
             try:
                 user = User.objects.get(email=username)
             except User.DoesNotExist:
-                return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+                return Response(
+                    {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
+                )
+        else:
+            try:
+                user = User.objects.get(username=username)
+                username = user.email
+            except User.DoesNotExist:
+                return Response(
+                    {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
+                )
 
-        # If user is not found by email, try to authenticate with username
-        if not user:
-            user = authenticate(username=username, password=password)
-
-        if user is not None:
+        # If user exists then we authenticate user
+        try:
+            authenticatedUser = authenticate(username=username, password=password)
+        except User.DoesNotExist:
+            return Response(
+                {"error": "Invalid credentials"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+        print(
+            "🐍 File: base/views.py | Line: 78 | post ~ authenticatedUser",
+            authenticatedUser,
+        )
+        # If user is authenticated return user and token
+        if authenticatedUser is not None:
             # Generate token
             serializer = MyTokenObtainPairSerializer()
-             # Serialize user information
-            user_serializer = UserSerializer(user)
+            # Serialize user information
+            user_serializer = UserSerializer(authenticatedUser)
 
-            token = serializer.get_token(user)
+            token = serializer.get_token(authenticatedUser)
             # Return token and user information
             response_data = {
-                'access_token': str(token.access_token),
+                "access_token": str(token.access_token),
                 # 'refresh_token': str(token.refresh),
-                'user': user_serializer.data
+                "user": user_serializer.data,
             }
             return Response(response_data, status=status.HTTP_200_OK)
         else:
-            return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response(
+                {"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED
+            )
+
 
 class UserManagement(APIView):
-  
+
     def delete(self, request, userId):
-        print("🐍 File: base/views.py | Line: 91 | UserManagement ~ request, user_id", userId)
+        print(
+            "🐍 File: base/views.py | Line: 91 | UserManagement ~ request, user_id",
+            userId,
+        )
 
         # return Response(status=status.HTTP_204_NO_CONTENT)
-        
+
         try:
-            user = User.objects.get(pk=userId)  # Assuming your User model has a primary key named 'id'
+            user = User.objects.get(
+                pk=userId
+            )  # Assuming your User model has a primary key named 'id'
         except User.DoesNotExist:
-            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
+            )
 
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
