@@ -61,7 +61,7 @@ class LoginAPI(APIView):
 
         email = True
 
-        # Check if username is an email 
+        # Check if username is an email
         try:
             valid = validate_email(username)
         except ValidationError:
