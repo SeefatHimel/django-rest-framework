@@ -5,7 +5,11 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
-class FamilyManager(models.Manager):
+class DefaultManager(models.Manager):
+    pass
+
+
+class DefaultManager2(models.Manager):
     pass
 
 
@@ -40,11 +44,13 @@ class Family(models.Model):
     users = models.ManyToManyField(
         User, blank=False, through=FamilyUser, related_name="families"
     )
-
-    objects = FamilyManager()
+    objects = DefaultManager()
 
 
 class FamilyMember(models.Model):
+
+    objects = DefaultManager2()
+
     name = models.CharField(max_length=50)
     img_link = models.CharField(max_length=500)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -56,13 +62,18 @@ class FamilyMember(models.Model):
         ("FEMALE", "Female"),
     )
     gender = models.CharField(max_length=8, choices=gender_options, default=MALE)
-    children = models.ManyToManyField("FamilyMember", blank=True)
+    children = models.ManyToManyField(
+        "FamilyMember",
+        blank=True,
+        default=None,
+    )
     spouse = models.ForeignKey(
         "FamilyMember",
         related_name="_spouse",
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
+        default=None,
     )
     father = models.ForeignKey(
         "FamilyMember",
@@ -70,6 +81,7 @@ class FamilyMember(models.Model):
         blank=False,
         null=True,
         on_delete=models.CASCADE,
+        default=None,
     )
     mother = models.ForeignKey(
         "FamilyMember",
@@ -77,5 +89,10 @@ class FamilyMember(models.Model):
         blank=False,
         null=True,
         on_delete=models.CASCADE,
+        default=None,
     )
     phone = models.CharField(max_length=15)
+
+    family = models.ForeignKey(
+        Family, blank=False, on_delete=models.CASCADE, related_name="members"
+    )

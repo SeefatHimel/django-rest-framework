@@ -1,4 +1,4 @@
-from .models import Family, FamilyUser
+from .models import Family, FamilyUser, FamilyMember
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -10,6 +10,62 @@ class FamilyListSerializer2(serializers.ModelSerializer):
     class Meta:
         model = Family
         fields = ["id", "name", "created_at", "updated_at"]
+
+
+class FamilyMemberParentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FamilyMember
+        fields = "__all__"
+
+
+class FamilyMemberSerializer(serializers.ModelSerializer):
+    mother = FamilyMemberParentSerializer()
+    father = FamilyMemberParentSerializer()
+
+    class Meta:
+        model = FamilyMember
+        fields = [
+            "id",
+            "name",
+            "img_link",
+            "phone",
+            "gender",
+            "spouse",
+            "father",
+            "mother",
+            "children",
+        ]
+
+    def __init__(self, *args, **kwargs):
+        # Recursive argument to handle self-referential relationships
+        recursive = kwargs.pop("recursive", False)
+        super(FamilyMemberSerializer, self).__init__(*args, **kwargs)
+        if recursive:
+            # Exclude 'spouse' field to prevent infinite recursion
+            self.fields.pop("spouse", None)
+        else:
+            # Include 'spouse' field with recursive serializer
+            self.fields["spouse"] = FamilyMemberSerializer(recursive=True)
+
+
+class FamilyMemberUpdateSerializer(serializers.ModelSerializer):
+    # spouse = FamilyMemberSerializer()
+
+    class Meta:
+        model = FamilyMember
+        fields = [
+            "id",
+            "name",
+            "img_link",
+            "phone",
+            "gender",
+            "spouse",
+            "father",
+            "mother",
+            "children",
+        ]
+        extra_kwargs = {"children": {"read_only": True}}
 
 
 class FamilyUserSerializer(serializers.ModelSerializer):
@@ -57,10 +113,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 class FamilyListSerializer(serializers.ModelSerializer):
     users = FamilyUserSerializer(source="familyuser_set", many=True)
+    members = FamilyMemberSerializer("members", many=True)
 
     class Meta:
         model = Family
-        fields = ["id", "name", "created_at", "updated_at", "users"]
+        fields = ["id", "name", "created_at", "updated_at", "users", "members"]
 
 
 from django import forms
