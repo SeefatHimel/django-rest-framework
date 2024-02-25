@@ -32,7 +32,7 @@ class Families(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-class FamilyMember(APIView):
+class FamilyUser(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, familyId):
